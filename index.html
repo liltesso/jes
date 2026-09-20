@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>MARSHAL — premium vape market</title>
+<script src="/config.js"></script>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#060309">
+<link rel="apple-touch-icon" href="/icon-192.png">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.0/dist/chart.umd.min.js" defer></script>
+  <link rel="stylesheet" href="style.css">
+<style>
+  img { content-visibility: auto; }
+  .card { content-visibility: auto; contain-intrinsic-size: 150px; }
+  #screen { will-change: transform, scroll-position; transform: translateZ(0); }
+</style>
+</head>
+<body>
+
+  <div id="ageGate" style="display:flex;position:fixed;inset:0;z-index:99999;background:#060309;flex-direction:column;align-items:center;justify-content:center;padding:20px;text-align:center;">
+    <div style="font-size:48px;margin-bottom:16px;">🔞</div>
+    <div style="font-size:24px;font-weight:800;margin-bottom:12px;" id="ageTitle">Вам есть 18 лет?</div>
+    <div style="color:rgba(255,255,255,0.6);margin-bottom:32px;" id="ageDesc">На сайте представлена продукция только для совершеннолетних.</div>
+    <button class="btn btn-primary" onclick="acceptAgeGate()" style="width:100%;max-width:300px;margin-bottom:16px;" id="ageBtn">Да, мне есть 18</button>
+  </div>
+  <script>
+    if (localStorage.getItem('ageAccepted')) {
+      document.getElementById('ageGate').style.display = 'none';
+    }
+    function acceptAgeGate() {
+      localStorage.setItem('ageAccepted', 'true');
+      document.getElementById('ageGate').style.display = 'none';
+    }
+  </script>
+
+<div id="app">
+  <div id="offline-banner" style="display:none; background: #b91c1c; color: #fff; text-align: center; padding: 9px 14px; font-size: 13px; font-weight: 600; z-index: 9999; flex-shrink: 0; border-bottom: 1px solid rgba(255,255,255,0.1);">⚠️ <span id="offline-banner-text">Вы в офлайне. Заказы недоступны.</span></div>
+  <div class="rings-bg" id="ringsBg"><div class="glow"></div></div>
+  <div class="tg-header">
+    <div class="lang-switch" onclick="toggleLang()">
+      <span id="lang-ru" style="opacity: 1;">🇷🇺</span>
+      <span id="lang-de" style="opacity: 0.3;">🇩🇪</span>
+    </div>
+    <div class="menu" onclick="openAdminGate()" title="Админ-панель">⚙</div>
+  </div>
+  
+      <!-- 18+ Verification Modal -->
+  <div id="age-modal" style="position:fixed;inset:0;background:rgba(15,5,22,0.95);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(10px);transition:opacity 0.3s;">
+    <div style="background:linear-gradient(135deg, rgba(30,10,40,0.9), rgba(15,5,22,0.9));border:1px solid #c026d3;border-radius:20px;padding:30px 20px;text-align:center;max-width:320px;box-shadow:0 0 40px rgba(192,38,211,0.3);">
+      <div style="font-size:48px;margin-bottom:16px;">🔞</div>
+      <h2 id="age-title" style="margin:0 0 12px;font-size:22px;">Вам уже есть 18 лет?</h2>
+      <p id="age-desc" style="color:rgba(255,255,255,0.6);font-size:14px;margin-bottom:24px;">Этот магазин содержит продукцию, предназначенную только для совершеннолетних.</p>
+      <div style="display:flex;gap:12px;">
+        <button id="age-yes" onclick="document.getElementById('age-modal').style.display='none'; localStorage.setItem('ageVerified', '1');" style="flex:1;background:linear-gradient(135deg, #c026d3, #7c3aed);border:none;border-radius:12px;color:#fff;font-weight:bold;padding:12px;cursor:pointer;">ДА</button>
+        <button id="age-no" onclick="document.body.innerHTML='<div style=\'text-align:center;padding:50px;color:#fff;\'>Доступ запрещен. Только для совершеннолетних.</div>'" style="flex:1;background:rgba(255,255,255,0.1);border:none;border-radius:12px;color:#fff;font-weight:bold;padding:12px;cursor:pointer;">НЕТ</button>
+      </div>
+    </div>
+  </div>
+  <script>
+    if (localStorage.getItem('ageVerified') === '1') {
+      document.getElementById('age-modal').style.display = 'none';
+    } else {
+      let lang = new URLSearchParams(window.location.search).get('lang') || localStorage.getItem('lang') || 'ru';
+      if (lang === 'de') {
+        document.getElementById('age-title').textContent = "Sind Sie über 18 Jahre alt?";
+        document.getElementById('age-desc').textContent = "Dieser Shop enthält Produkte, die nur für Erwachsene bestimmt sind.";
+        document.getElementById('age-yes').textContent = "JA";
+        document.getElementById('age-no').textContent = "NEIN";
+      }
+    }
+  </script>
+
+  <div id="screen" class="no-scroll"></div>
+  <div class="tabbar" id="tabbar"></div>
+  <div id="adminOverlay" style="display:none;position:absolute;inset:0;z-index:50;background:#0a0510;flex-direction:column;"></div>
+</div>
+    <script src="js/lang.js"></script>
+  <script src="js/admin/core.js"></script>
+  <script src="js/admin/products.js"></script>
+  <script src="js/admin/orders.js"></script>
+  <script src="js/admin/dicts.js"></script>
+  <script src="js/admin/promo.js"></script>
+  <script src="js/admin/stats.js"></script>
+  <script src="js/admin/settings.js"></script>
+  <script src="js/ui/core.js"></script>
+  <script src="js/ui/actions.js"></script>
+  <script src="js/ui/home.js"></script>
+  <script src="js/ui/catalog.js"></script>
+  <script src="js/ui/cart.js"></script>
+  <script src="js/ui/profile.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
